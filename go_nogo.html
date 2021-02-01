@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>go-nogo task</title>
+    <script src="jsPsych/jspsych.js"></script>
+    <script src="jsPsych/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jsPsych/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="jspsych/plugins/jspsych-fullscreen.js"></script>
+    <link rel="stylesheet" href="jsPsych/css/jspsych.css"></link>
+</head>
+<body>
+    <script>
+
+        // Images to be preloaded: Be careful in cognition.run, because the platform preload the images automaticallly
+        images = ['jsPsych/examples/img/blue.png','jsPsych/examples/img/orange.png']
+
+        /* create timeline */
+        var timeline = [];
+
+        /* define full screen trial */
+        
+        var fullscreen_trial = {
+            type: 'fullscreen',
+            fullscreen_mode: true,
+            message: '<p>Le damos la bienvenida al experimento, por favor presione el botón para ir a pantalla completa </p>',
+            button_label: 'Pantalla completa'
+        }
+        
+
+        /* define instructions trial */
+        var instructions = {
+        type: "html-keyboard-response",
+        stimulus: "<p> En el siguiente experimento, un círculo va a aparecer " +
+            "en el centro de la pantalla.</p><p>Si el círculo es <strong>azul</strong>, " +
+            "presione la barra espaciadora lo más rápido que pueda.</p>" +
+            "<p>Si el círculo es <strong>naranja</strong>, no presione ninguna tecla " +
+            "<div style='width: 700px;'>"+
+            "<div style='float: left;'><img src='jsPsych/examples/img/blue.png'></img>" +
+            "<p class='small'><strong>✅ Presione la barra</strong></p></div>" +
+            "<div class='float: right;'><img src='jsPsych/examples/img/orange.png'></img>" +
+            "<p class='small'><strong>❌ No presione nada</strong></p></div>" +
+            "</div>"+
+            "<p><strong>Coloque su dedo sobre la barra y cuando lo desee presionela para comenzar.</strong></p>",
+        post_trial_gap: 2000
+        };
+     
+
+        /* test trials */
+
+        var test_stimuli = [
+        { stimulus: "jsPsych/examples/img/blue.png", data: { test_part: 'test', correct_response: 'space' } },
+        { stimulus: "jsPsych/examples/img/orange.png", data: { test_part: 'test', correct_response: jsPsych.NO_KEYS} }
+        ];
+
+        var fixation = {
+        type: 'html-keyboard-response',
+        stimulus: '<div style="font-size:60px;">+</div>',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 200,
+        // trial_duration: function(){
+        //     return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
+        // },
+        data: {test_part: 'fixation'}
+        }
+
+        var test = {
+        type: "image-keyboard-response",
+        stimulus: jsPsych.timelineVariable('stimulus'),
+        // choices: ['f', 'j'],
+        trial_duration: 2000,
+        data: jsPsych.timelineVariable('data'),
+        on_finish: function(data){
+            data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
+        },
+        }
+
+        var test_procedure = {
+        timeline: [fixation, test],
+        timeline_variables: test_stimuli,
+        repetitions: 5,
+        randomize_order: true
+        }
+
+
+        /* define debrief */
+
+        var debrief_block = {
+        type: "html-keyboard-response",
+        stimulus: function() {
+
+            var trials = jsPsych.data.get().filter({test_part: 'test'});
+            var correct_trials = trials.filter({correct: true});
+            var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+            var rt = Math.round(trials.select('rt').mean());
+
+            return "<p>Respondiste correctamente el "+accuracy+"% de los ensayos.</p>"+
+            "<p>Tu tiempo de respuesta promedio fue de  "+rt+"milisegundos.</p>"+
+            "<p>Gracias! Presione cualquier tecla para terminar el experimento y enviar los datos</p>";
+
+        }
+        };
+
+        /* start the experiment */
+        jsPsych.init({
+        timeline: [fullscreen_trial, instructions, test_procedure, debrief_block],
+        preload_images: images,
+        on_finish: function() {
+            jsPsych.data.displayData();
+        }
+        });
+    </script>
+</body>
+</html>
