@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../jspsych.js"></script>
+    <script src="../plugins/jspsych-canvas-keyboard-response.js"></script>
+    <script src="../plugins/jspsych-html-keyboard-response.js"></script>
+    <link rel="stylesheet" href="../css/jspsych.css" />
+  </head>
+  <body></body>
+  <script>
+    // // to use the canvas stimulus function with timeline variables,
+    // // the jsPsych.timelineVariable() function can be used inside your stimulus function
+
+    var trial_procedure = {
+      timeline: [
+        {
+          type: "html-keyboard-response",
+          stimulus: '<div style="font-size:60px;">+</div>',
+          choices: jsPsych.NO_KEYS,
+          trial_duration: 300,
+        },
+        {
+          type: "canvas-keyboard-response",
+          stimulus: function (c) {
+            var ctx = c.getContext("2d");
+            ctx.beginPath();
+            ctx.fillStyle = jsPsych.timelineVariable("color");
+            ctx.fillRect(
+              jsPsych.timelineVariable("upper_left_x"),
+              jsPsych.timelineVariable("upper_left_y"),
+              jsPsych.timelineVariable("width"),
+              jsPsych.timelineVariable("height")
+            );
+            ctx.fillStyle = jsPsych.timelineVariable("color2");
+            ctx.fillRect(
+              jsPsych.timelineVariable("upper_left_x2"),
+              jsPsych.timelineVariable("upper_left_y2"),
+              jsPsych.timelineVariable("width2"),
+              jsPsych.timelineVariable("height2")
+            );
+            ctx.fillStyle = jsPsych.timelineVariable("color3");
+            ctx.fillRect(
+              jsPsych.timelineVariable("upper_left_x3"),
+              jsPsych.timelineVariable("upper_left_y3"),
+              jsPsych.timelineVariable("width3"),
+              jsPsych.timelineVariable("height3")
+            );
+            ctx.fillStyle = jsPsych.timelineVariable("color4");
+            ctx.fillRect(
+              jsPsych.timelineVariable("upper_left_x4"),
+              jsPsych.timelineVariable("upper_left_y4"),
+              jsPsych.timelineVariable("width4"),
+              jsPsych.timelineVariable("height4")
+            );
+            ctx.fillStyle = jsPsych.timelineVariable("color5");
+            ctx.fillRect(
+              jsPsych.timelineVariable("upper_left_x5"),
+              jsPsych.timelineVariable("upper_left_y5"),
+              jsPsych.timelineVariable("width5"),
+              jsPsych.timelineVariable("height5")
+            );
+            ctx.stroke();
+          },
+          choices: ["a", "l"],
+          trial_duration: jsPsych.timelineVariable("trial_duration"),
+          prompt: jsPsych.timelineVariable("prompt"),
+
+          data: {
+            // I don't know if height and width are neccesary because doesn't change between trials. Alwas 50x50 pixels
+            upper_left_x: jsPsych.timelineVariable("upper_left_x"),
+            upper_left_y: jsPsych.timelineVariable("upper_left_y"),
+            color: jsPsych.timelineVariable("color"),
+
+            upper_left_x2: jsPsych.timelineVariable("upper_left_x2"),
+            upper_left_y2: jsPsych.timelineVariable("upper_left_y2"),
+            color2: jsPsych.timelineVariable("color2"),
+
+            upper_left_x3: jsPsych.timelineVariable("upper_left_x3"),
+            upper_left_y3: jsPsych.timelineVariable("upper_left_y3"),
+            color3: jsPsych.timelineVariable("color3"),
+
+            upper_left_x4: jsPsych.timelineVariable("upper_left_x4"),
+            upper_left_y4: jsPsych.timelineVariable("upper_left_y4"),
+            color4: jsPsych.timelineVariable("color4"),
+
+            upper_left_x5: jsPsych.timelineVariable("upper_left_x5"),
+            upper_left_y5: jsPsych.timelineVariable("upper_left_y5"),
+            color5: jsPsych.timelineVariable("color5"),
+          },
+        },
+      ],
+
+      timeline_variables: [
+        {
+          algo: 1,
+          trial_duration: 3000,
+          upper_left_x: 150,
+          upper_left_y: 100,
+          height: 50,
+          width: 50,
+          color: "red",
+
+          upper_left_x2: 270,
+          upper_left_y2: 200,
+          height2: 50,
+          width2: 50,
+          color2: "blue",
+
+          upper_left_x3: 120,
+          upper_left_y3: 310,
+          height3: 50,
+          width3: 50,
+          color3: "green",
+
+          upper_left_x4: 367,
+          upper_left_y4: 23,
+          height4: 50,
+          width4: 50,
+          color4: "purple",
+
+          upper_left_x5: 200,
+          upper_left_y5: 350,
+          height5: 50,
+          width5: 50,
+          color5: "yellow",
+        },
+        {
+          //   trial_duration: 2000,
+          upper_left_x: 150,
+          upper_left_y: 100,
+          height: 50,
+          width: 50,
+          color: "red",
+          prompt: "<h1>¿Igual (A) o diferente (L)? </h1>",
+        },
+      ],
+    };
+
+    jsPsych.init({
+      timeline: [trial_procedure],
+      on_finish: function () {
+        jsPsych.data.displayData();
+      },
+    });
+  </script>
+</html>
