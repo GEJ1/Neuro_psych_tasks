@@ -1,31 +1,39 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="jspsych.js"></script>
-    <script src="/plugins/jspsych-canvas-keyboard-response.js"></script>
-    <script src="/plugins/jspsych-html-keyboard-response.js"></script>
-    <link rel="stylesheet" href="/css/jspsych.css" />
+    <script src="jsPsych/jspsych.js"></script>
+    <script src="jsPsych/plugins/jspsych-canvas-keyboard-response.js"></script>
+    <script src="jsPsych/plugins/jspsych-html-keyboard-response.js"></script>
+    <link rel="stylesheet" href="jsPsych/css/jspsych.css" />
   </head>
   <body></body>
   <script>
-    const squareDimension = 50;
-    // Square translation, because I receive the center position of the square but the drawing in canvas use the upper left point.
-    translationFromCenter = squareDimension / 2;
+    //Paramenters
+
+    const trialDuration = 2500; //150 ms in psychopy version
+    const promptText = `<h1 style='position: absolute'> ¿Igual (A) o diferente (L)? </h1>`;
 
     //Scaled for 500x500 pixes canvas
-    canvasScale = 500;
+    const canvasScale = 500;
+
+    // square size
+    const squareDimension = canvasScale / 10;
+
+    // Square translation, because I receive the center position of the square but the drawing in canvas use the upper left point.
+    const translationFromCenter = squareDimension / 2;
 
     // // to use the canvas stimulus function with timeline variables,
     // // the jsPsych.timelineVariable() function can be used inside your stimulus function
-
     var trial_procedure = {
       timeline: [
-        // {
-        //   type: "html-keyboard-response",
-        //   stimulus: '<div style="font-size:60px;">+</div>',
-        //   choices: jsPsych.NO_KEYS,
-        //   trial_duration: 300,
-        // },
+        // ToDo: 2 options: using html-keyboard-response to shox the fixation or drawing the fixation on canvas.
+        {
+          type: "html-keyboard-response",
+          stimulus: '<div style="font-size:60px;">+</div>',
+          choices: jsPsych.NO_KEYS,
+          trial_duration: 300, //trialDuration
+        },
+
         {
           type: "canvas-keyboard-response",
           stimulus: function (c) {
@@ -37,7 +45,7 @@
             ctx.translate(c.width / 2, c.height / 2);
 
             // draw a dot at the new origin
-            // only for debug purposes
+            // only for debug purposes.
             ctx.beginPath();
             ctx.arc(0, 0, 5, 0, Math.PI * 2);
             ctx.closePath();
@@ -46,48 +54,105 @@
             ctx.fillText("[ 0, 0 ]", 0, -10);
 
             ctx.beginPath();
-            ctx.fillStyle = jsPsych.timelineVariable("color");
-            ctx.fillRect(
-              jsPsych.timelineVariable("upper_left_x"),
-              jsPsych.timelineVariable("upper_left_y"),
-              jsPsych.timelineVariable("width"),
-              jsPsych.timelineVariable("height")
-            );
-            ctx.fillStyle = jsPsych.timelineVariable("color2");
-            ctx.fillRect(
-              jsPsych.timelineVariable("upper_left_x2"),
-              jsPsych.timelineVariable("upper_left_y2"),
-              jsPsych.timelineVariable("width2"),
-              jsPsych.timelineVariable("height2")
-            );
-            ctx.fillStyle = jsPsych.timelineVariable("color3");
-            ctx.fillRect(
-              jsPsych.timelineVariable("upper_left_x3"),
-              jsPsych.timelineVariable("upper_left_y3"),
-              jsPsych.timelineVariable("width3"),
-              jsPsych.timelineVariable("height3")
-            );
-            ctx.fillStyle = jsPsych.timelineVariable("color4");
-            ctx.fillRect(
-              jsPsych.timelineVariable("upper_left_x4"),
-              jsPsych.timelineVariable("upper_left_y4"),
-              jsPsych.timelineVariable("width4"),
-              jsPsych.timelineVariable("height4")
-            );
-            ctx.fillStyle = jsPsych.timelineVariable("color5");
-            ctx.fillRect(
-              jsPsych.timelineVariable("upper_left_x5"),
-              jsPsych.timelineVariable("upper_left_y5"),
-              jsPsych.timelineVariable("width5"),
-              jsPsych.timelineVariable("height5")
-            );
+            if (jsPsych.timelineVariable("presented") === 1) {
+              ctx.fillStyle = jsPsych.timelineVariable("color");
+              ctx.fillRect(
+                jsPsych.timelineVariable("upper_left_x"),
+                jsPsych.timelineVariable("upper_left_y"),
+                jsPsych.timelineVariable("width"),
+                jsPsych.timelineVariable("height")
+              );
+            }
+            if (jsPsych.timelineVariable("presented2") === 1) {
+              ctx.fillStyle = jsPsych.timelineVariable("color2");
+              ctx.fillRect(
+                jsPsych.timelineVariable("upper_left_x2"),
+                jsPsych.timelineVariable("upper_left_y2"),
+                jsPsych.timelineVariable("width2"),
+                jsPsych.timelineVariable("height2")
+              );
+            }
+            if (jsPsych.timelineVariable("presented3") === 1) {
+              ctx.fillStyle = jsPsych.timelineVariable("color3");
+              ctx.fillRect(
+                jsPsych.timelineVariable("upper_left_x3"),
+                jsPsych.timelineVariable("upper_left_y3"),
+                jsPsych.timelineVariable("width3"),
+                jsPsych.timelineVariable("height3")
+              );
+            }
+
+            if (jsPsych.timelineVariable("presented4") === 1) {
+              ctx.fillStyle = jsPsych.timelineVariable("color4");
+              ctx.fillRect(
+                jsPsych.timelineVariable("upper_left_x4"),
+                jsPsych.timelineVariable("upper_left_y4"),
+                jsPsych.timelineVariable("width4"),
+                jsPsych.timelineVariable("height4")
+              );
+            }
+
+            if (jsPsych.timelineVariable("presented5") === 1) {
+              ctx.fillStyle = jsPsych.timelineVariable("color5");
+              ctx.fillRect(
+                jsPsych.timelineVariable("upper_left_x5"),
+                jsPsych.timelineVariable("upper_left_y5"),
+                jsPsych.timelineVariable("width5"),
+                jsPsych.timelineVariable("height5")
+              );
+            }
+
+            if (jsPsych.timelineVariable("presented6") === 1) {
+              ctx.fillStyle = jsPsych.timelineVariable("color6");
+              ctx.fillRect(
+                jsPsych.timelineVariable("upper_left_x6"),
+                jsPsych.timelineVariable("upper_left_y6"),
+                jsPsych.timelineVariable("width6"),
+                jsPsych.timelineVariable("height6")
+              );
+            }
+
+            if (jsPsych.timelineVariable("presented7") === 1) {
+              ctx.fillStyle = jsPsych.timelineVariable("color7");
+              ctx.fillRect(
+                jsPsych.timelineVariable("upper_left_x7"),
+                jsPsych.timelineVariable("upper_left_y7"),
+                jsPsych.timelineVariable("width7"),
+                jsPsych.timelineVariable("height7")
+              );
+            }
+
+            if (jsPsych.timelineVariable("presented8") === 1) {
+              ctx.fillStyle = jsPsych.timelineVariable("color8");
+              ctx.fillRect(
+                jsPsych.timelineVariable("upper_left_x8"),
+                jsPsych.timelineVariable("upper_left_y8"),
+                jsPsych.timelineVariable("width8"),
+                jsPsych.timelineVariable("height8")
+              );
+            }
+
+            if (jsPsych.timelineVariable("presented_target") === 1) {
+              ctx.fillStyle = jsPsych.timelineVariable("color_target");
+              ctx.fillRect(
+                jsPsych.timelineVariable("upper_left_target_x"),
+                jsPsych.timelineVariable("upper_left_target_y"),
+                jsPsych.timelineVariable("width_target"),
+                jsPsych.timelineVariable("height_target")
+              );
+            }
+
             ctx.stroke();
           },
+
           choices: ["a", "l"],
+          canvas_size: [canvasScale, canvasScale],
           trial_duration: jsPsych.timelineVariable("trial_duration"),
           prompt: jsPsych.timelineVariable("prompt"),
 
           data: {
+            trial_duration: trialDuration,
+            corrAns: jsPsych.timelineVariable("corrAns"),
             upper_left_x: jsPsych.timelineVariable("upper_left_x"),
             upper_left_y: jsPsych.timelineVariable("upper_left_y"),
             color: jsPsych.timelineVariable("color"),
@@ -119,70 +184,87 @@
             upper_left_x8: jsPsych.timelineVariable("upper_left_x8"),
             upper_left_y8: jsPsych.timelineVariable("upper_left_y8"),
             color8: jsPsych.timelineVariable("color8"),
+
+            upper_left_target_x: jsPsych.timelineVariable(
+              "upper_left_target_x"
+            ),
+            upper_left_target_y: jsPsych.timelineVariable(
+              "upper_left_target_y"
+            ),
+            color_target: jsPsych.timelineVariable("color_target"),
           },
         },
       ],
 
       timeline_variables: [
         {
-          algo: 1,
-          trial_duration: 5000,
-          upper_left_x: -0.5 * canvasScale - translationFromCenter,
-          upper_left_y: -0.5 * canvasScale - translationFromCenter,
+          trial_duration: trialDuration,
+          upper_left_x: -0.3 * canvasScale - translationFromCenter,
+          upper_left_y: -0.2 * canvasScale - translationFromCenter,
           height: squareDimension,
           width: squareDimension,
           color: "orange",
+          presented: 0,
 
           upper_left_x2: 0.5 * canvasScale - translationFromCenter,
           upper_left_y2: 0.5 * canvasScale - translationFromCenter,
           height2: squareDimension,
           width2: squareDimension,
           color2: "blue",
+          presented2: 1,
 
           upper_left_x3: -0.14 * canvasScale - translationFromCenter,
           upper_left_y3: -0.27 * canvasScale - translationFromCenter,
           height3: squareDimension,
           width3: squareDimension,
           color3: "white",
+          presented3: 1,
 
           upper_left_x4: -0.41 * canvasScale - translationFromCenter,
           upper_left_y4: 0.14 * canvasScale - translationFromCenter,
           height4: squareDimension,
           width4: squareDimension,
           color4: "red",
+          presented4: 0,
 
-          // upper_left_x5: 0.14 * canvasScale - translationFromCenter,
-          // upper_left_y5: 0.41 * canvasScale - translationFromCenter,
-          // height5: squareDimension,
-          // width5: squareDimension,
-          // color5: "black",
+          upper_left_x5: 0.14 * canvasScale - translationFromCenter,
+          upper_left_y5: 0.41 * canvasScale - translationFromCenter,
+          height5: squareDimension,
+          width5: squareDimension,
+          color5: "black",
+          presented5: 1,
 
-          // upper_left_x6: 0.14 * canvasScale - translationFromCenter,
-          // upper_left_y6: 0.41 * canvasScale - translationFromCenter,
-          // height6: squareDimension,
-          // width6: squareDimension,
-          // color6: "black",
+          upper_left_x6: 0.14 * canvasScale - translationFromCenter,
+          upper_left_y6: 0.41 * canvasScale - translationFromCenter,
+          height6: squareDimension,
+          width6: squareDimension,
+          color6: "black",
+          presented6: 1,
 
-          // upper_left_x7: 0.14 * canvasScale - translationFromCenter,
-          // upper_left_y7: 0.41 * canvasScale - translationFromCenter,
-          // height7: squareDimension,
-          // width7: squareDimension,
-          // color7: "magenta",
+          upper_left_x7: 0.14 * canvasScale - translationFromCenter,
+          upper_left_y7: 0.41 * canvasScale - translationFromCenter,
+          height7: squareDimension,
+          width7: squareDimension,
+          color7: "magenta",
+          presented7: 1,
 
-          // upper_left_x8: 0.14 * canvasScale - translationFromCenter,
-          // upper_left_y8: 0.41 * canvasScale - translationFromCenter,
-          // height8: squareDimension,
-          // width8: squareDimension,
-          // color8: "yellow",
+          upper_left_x8: 0.14 * canvasScale - translationFromCenter,
+          upper_left_y8: 0.41 * canvasScale - translationFromCenter,
+          height8: squareDimension,
+          width8: squareDimension,
+          color8: "yellow",
+          presented8: 1,
         },
         {
           //   trial_duration: 2000,
-          upper_left_x: 150,
-          upper_left_y: 100,
-          height: 50,
-          width: 50,
-          color: "red",
-          prompt: `<h1 style='position: absolute'> ¿Igual (A) o diferente (L)? </h1>`,
+          upper_left_target_x: -0.3 * canvasScale - translationFromCenter,
+          upper_left_target_y: -0.2 * canvasScale - translationFromCenter,
+          height_target: squareDimension,
+          width_target: squareDimension,
+          color_target: "red",
+          prompt: promptText,
+          presented_target: 1,
+          corrAns: "a",
         },
       ],
     };
