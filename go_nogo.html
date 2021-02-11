@@ -12,25 +12,46 @@
 </head>
 <body>
     <script>
-
+        
+        //Change in styles
+        document.body.style.backgroundColor = "#BEBEBE";
+        
         // Images to be preloaded: Be careful in cognition.run, because the platform preload the images automaticallly
         images = ['jsPsych/examples/img/blue.png','jsPsych/examples/img/orange.png']
 
-        /* create timeline */
         var timeline = [];
 
-        /* define full screen trial */
+        //Parameters
+
+        const FIXATION_DURATION_TRAINING = 900
+        const TRIAL_DURATION_TRAINING = 900
+        const TRAINING_PROCEDURE_REPS = 3 // The final number of trials =  this TEST_PROCEDURE_TRAINING_REPS * training_stimuli.length
+
+        const FIXATION_DURATION_TEST = 450
+        const TRIAL_DURATION_TEST = 450
+        const TEST_PROCEDURE_REPS = 15 // The final number of trials =  this TEST_PROCEDURE_TESTS_REPS * test_stimuli.length
+
+        const STIMULUS_HEIGHT = 150
+        const STIMULUS_WIDTH = 150
+
+        
+
+        
+
+        // full screen trial 
         
         var fullscreen_trial = {
             type: 'fullscreen',
             fullscreen_mode: true,
-            message: '<p>Le damos la bienvenida al experimento, por favor presione el botón para ir a pantalla completa </p>',
+            message: '<h2>Le damos la bienvenida al experimento,</h2>'+' <h2>por favor presione el botón para ir a pantalla completa </h2>',
             button_label: 'Pantalla completa'
         }
         
 
         /* define instructions trial */
-        var instructions = {
+
+        // Instructions trial at begining of the experiment
+        var start_instructions = {
         type: "html-keyboard-response",
         stimulus: "<p> En el siguiente experimento, un círculo va a aparecer " +
             "en el centro de la pantalla.</p><p>Si el círculo es <strong>azul</strong>, " +
@@ -43,46 +64,128 @@
             "<p class='small'><strong>❌ No presione nada</strong></p></div>" +
             "</div>"+
             "<p><strong>Coloque su dedo sobre la barra y cuando lo desee presionela para comenzar.</strong></p>",
+        post_trial_gap: 1000
+        };
+
+        // Instructions trials
+        var instructions_training = {
+        type: "html-keyboard-response",
+        stimulus: "<h1> Primero vamos a tener unos ensayos de prueba</h1>" +
+            "<h2><strong>Coloque su dedo sobre la barra y cuando lo desee presionela para comenzar el entrenamiento.</h2></p>",
         post_trial_gap: 2000
         };
-     
 
+        // Instructions before the real data collection begins
+        var instructions_test_begin = {
+        type: "html-keyboard-response",
+        stimulus: "<h1> A continuación comenzará el experimento </h1>" +
+            "<h3> Va a ser más rápido, así que intente estar atento a la pantalla </h3>"+
+            "<h2><strong>Coloque su dedo sobre la barra y cuando lo desee presionela para comenzar.</h2></p>",
+        post_trial_gap: 2000
+        };
+
+        ///////////////////* stimuli trials *//////////////////////////////////////////////////
+
+        /* training trials */
+        //50% go, 50% no go
+        var training_stimuli = [
+        { stimulus: "jsPsych/examples/img/blue.png", data: { training_part: 'test', correct_response_training: 'space' } },
+        { stimulus: "jsPsych/examples/img/orange.png", data: { training_part: 'test', correct_response_training: jsPsych.NO_KEYS} }
+        ];
+        
+        
         /* test trials */
-
+        //70% go, 30% no go  
         var test_stimuli = [
         { stimulus: "jsPsych/examples/img/blue.png", data: { test_part: 'test', correct_response: 'space' } },
+        { stimulus: "jsPsych/examples/img/blue.png", data: { test_part: 'test', correct_response: 'space' } },
+        { stimulus: "jsPsych/examples/img/blue.png", data: { test_part: 'test', correct_response: 'space' } },
+        { stimulus: "jsPsych/examples/img/blue.png", data: { test_part: 'test', correct_response: 'space' } },
+        { stimulus: "jsPsych/examples/img/blue.png", data: { test_part: 'test', correct_response: 'space' } },
+        { stimulus: "jsPsych/examples/img/blue.png", data: { test_part: 'test', correct_response: 'space' } },
+        { stimulus: "jsPsych/examples/img/blue.png", data: { test_part: 'test', correct_response: 'space' } },
+        { stimulus: "jsPsych/examples/img/orange.png", data: { test_part: 'test', correct_response: jsPsych.NO_KEYS} },
+        { stimulus: "jsPsych/examples/img/orange.png", data: { test_part: 'test', correct_response: jsPsych.NO_KEYS} },
         { stimulus: "jsPsych/examples/img/orange.png", data: { test_part: 'test', correct_response: jsPsych.NO_KEYS} }
         ];
 
-        var fixation = {
+        // fixation cross
+        var fixation_training = {
         type: 'html-keyboard-response',
         stimulus: '<div style="font-size:60px;">+</div>',
         choices: jsPsych.NO_KEYS,
-        trial_duration: 200,
-        // trial_duration: function(){
-        //     return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
-        // },
+        trial_duration: FIXATION_DURATION_TRAINING,
+        data: {training_part: 'fixation'}
+        }
+
+        var fixation_test = {
+        type: 'html-keyboard-response',
+        stimulus: '<div style="font-size:60px;">+</div>',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: FIXATION_DURATION_TEST,
         data: {test_part: 'fixation'}
+        }
+
+        var feedback = {
+        type: 'html-keyboard-response',
+        trial_duration: 1000,
+        stimulus: function(){
+            var last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
+            if(last_trial_correct){
+            return "<h1 style='color: green'>¡Correcto!</h1>";
+            } else {
+            return "<h1 style='color: red'>Incorrecto.</h1>"
+            }
+        }
+        }
+
+        var training = {
+        type: "image-keyboard-response",
+        stimulus: jsPsych.timelineVariable('stimulus'),
+        // choices: ['f', 'j'],
+        trial_duration: TRIAL_DURATION_TRAINING,
+        data: jsPsych.timelineVariable('data'),
+        stimulus_height: STIMULUS_HEIGHT,
+        stimulus_width: STIMULUS_WIDTH,
+        
+        on_finish: function(data){
+            if(data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response_training)){
+                data.correct = true; // can add property correct by modify data object directly
+            } else {
+                data.correct = false;
+            }
+        }
+        // on_finish: function(data){
+        //     data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
+        // },
         }
 
         var test = {
         type: "image-keyboard-response",
         stimulus: jsPsych.timelineVariable('stimulus'),
         // choices: ['f', 'j'],
-        trial_duration: 2000,
+        trial_duration: TRIAL_DURATION_TEST,
         data: jsPsych.timelineVariable('data'),
+        stimulus_height: STIMULUS_HEIGHT,
+        stimulus_width: STIMULUS_WIDTH,
         on_finish: function(data){
             data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
         },
         }
 
-        var test_procedure = {
-        timeline: [fixation, test],
-        timeline_variables: test_stimuli,
-        repetitions: 5,
+        var training_procedure = {
+        timeline: [fixation_training, training,feedback],
+        timeline_variables: training_stimuli,
+        repetitions: TRAINING_PROCEDURE_REPS,
         randomize_order: true
         }
 
+        var test_procedure = {
+        timeline: [fixation_test, test],
+        timeline_variables: test_stimuli,
+        repetitions: TEST_PROCEDURE_REPS,
+        randomize_order: true
+        }
 
         /* define debrief */
 
@@ -95,16 +198,19 @@
             var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
             var rt = Math.round(trials.select('rt').mean());
 
-            return "<p>Respondiste correctamente el "+accuracy+"% de los ensayos.</p>"+
-            "<p>Tu tiempo de respuesta promedio fue de  "+rt+"milisegundos.</p>"+
-            "<p>Gracias! Presione cualquier tecla para terminar el experimento y enviar los datos</p>";
+            return "<h3>Respondiste correctamente el "+accuracy+"% de los ensayos.</h2>"+
+            "<h3>Tu tiempo de respuesta promedio fue de  "+rt+"milisegundos.</h3>"+
+            "<h2>¡Gracias! Presione cualquier tecla para terminar el experimento y enviar los datos</p>";
 
         }
         };
 
         /* start the experiment */
         jsPsych.init({
-        timeline: [fullscreen_trial, instructions, test_procedure, debrief_block],
+        
+        timeline: [fullscreen_trial, start_instructions,instructions_training,training_procedure, 
+                  instructions_test_begin , test_procedure, debrief_block],
+        
         preload_images: images,
         on_finish: function() {
             jsPsych.data.displayData();
